@@ -1,0 +1,174 @@
+-------------------------------------------------------------------------------------------------------------
+PROGRAM A: FCFS DISK SCHEDULING
+-------------------------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    int req[20], n, head, i;
+    int seek = 0;
+
+    printf("Enter Number of Requests: ");
+    scanf("%d", &n);
+
+    printf("Enter Request Queue:\n");
+    for (i = 0; i < n; i++)
+        scanf("%d", &req[i]);
+
+    printf("Enter Initial Head Position: ");
+    scanf("%d", &head);
+
+    for (i = 0; i < n; i++)
+    {
+        seek += abs(req[i] - head);
+        head = req[i];
+    }
+
+    printf("Total Head Movement = %d\n", seek);
+
+    return 0;
+}
+
+
+OUTPUT:
+Enter Number of Requests: 8
+Enter Request Queue:
+98 183 37 122 14 124 65 67
+Enter Initial Head Position: 53
+
+Total Head Movement = 640
+----------------------------------------------------------------------------------------------------------------
+PROGRAM B: SSTF DISK SCHEDULING
+----------------------------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    int req[20], visited[20] = {0};
+    int n, head, i, count = 0;
+    int seek = 0, index, min, distance;
+
+    printf("Enter Number of Requests: ");
+    scanf("%d", &n);
+
+    printf("Enter Request Queue:\n");
+    for (i = 0; i < n; i++)
+        scanf("%d", &req[i]);
+
+    printf("Enter Initial Head Position: ");
+    scanf("%d", &head);
+
+    while (count < n)
+    {
+        min = 9999;
+
+        for (i = 0; i < n; i++)
+        {
+            if (!visited[i])
+            {
+                distance = abs(req[i] - head);
+
+                if (distance < min)
+                {
+                    min = distance;
+                    index = i;
+                }
+            }
+        }
+
+        seek += min;
+        head = req[index];
+        visited[index] = 1;
+        count++;
+    }
+
+    printf("Total Head Movement = %d\n", seek);
+
+    return 0;
+}
+
+OUTPUT:
+Enter Number of Requests: 8
+Enter Request Queue:
+98 183 37 122 14 124 65 67
+Enter Initial Head Position: 53
+
+Total Head Movement = 236
+--------------------------------------------------------------------------------------------------------
+PROGRAM C: SCAN DISK SCHEDULING
+--------------------------------------------------------------------------------------------------------
+#include <stdio.h>
+#include <stdlib.h>
+
+int main()
+{
+    int req[20], n, head, diskSize;
+    int i, j, temp;
+    int seek = 0;
+
+    printf("Enter Number of Requests: ");
+    scanf("%d", &n);
+
+    printf("Enter Request Queue:\n");
+    for (i = 0; i < n; i++)
+        scanf("%d", &req[i]);
+
+    printf("Enter Initial Head Position: ");
+    scanf("%d", &head);
+
+    printf("Enter Disk Size: ");
+    scanf("%d", &diskSize);
+
+    /* Sort request queue */
+    for (i = 0; i < n - 1; i++)
+    {
+        for (j = i + 1; j < n; j++)
+        {
+            if (req[i] > req[j])
+            {
+                temp = req[i];
+                req[i] = req[j];
+                req[j] = temp;
+            }
+        }
+    }
+
+    /* Move towards higher cylinders */
+    for (i = 0; i < n; i++)
+    {
+        if (req[i] >= head)
+        {
+            seek += req[i] - head;
+            head = req[i];
+        }
+    }
+
+    /* Move to the end of disk */
+    seek += (diskSize - 1) - head;
+    head = diskSize - 1;
+
+    /* Reverse direction */
+    for (i = n - 1; i >= 0; i--)
+    {
+        if (req[i] < head)
+        {
+            seek += head - req[i];
+            head = req[i];
+        }
+    }
+
+    printf("Total Head Movement = %d\n", seek);
+
+    return 0;
+}
+OUTPUT:
+Enter Number of Requests: 8
+Enter Request Queue:
+98 183 37 122 14 124 65 67
+Enter Initial Head Position: 53
+Enter Disk Size: 200
+
+Total Head Movement = 331
+-----------------------------------
